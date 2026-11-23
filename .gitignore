@@ -22,3 +22,16 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Coverage & test output
+coverage
+.nyc_output
+
+# Temporary files
+temp/
+tmp/

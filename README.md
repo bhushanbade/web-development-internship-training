@@ -1,6 +1,6 @@
 # PugArch Web Development Training — 20-Day Intern Program
 
-This repository tracks the 20-day intensive web development training curriculum covering React, TypeScript, Next.js, Node.js/Express, PostgreSQL, Laravel, and Angular, leading to the full-stack Capstone Project.
+20-day hands-on web development training covering modern frontend (React, TypeScript, Next.js, Angular), backend (Node.js/Express, Laravel), databases (PostgreSQL), and full-stack capstone projects.
 
 ---
 
@@ -14,7 +14,7 @@ Build a small component-based dashboard interface demonstrating:
 
 ### Hands-on Deliverable
 **PugArch OpsHub — Task & Team Management Dashboard**
-- Reusable **Header** with search bar, notification badge, and user profile capsule.
+- Reusable **Header** with search bar, notification badge, and user profile capsule (**Bhushan Bade**).
 - Reusable **Navigation Sidebar** with tab navigation, collapse/expand toggle, and status indicators.
 - Reusable **Summary Cards** displaying key metrics, trend rates, and icons with timeframe filtering (Today / Week / Month).
 - Interactive **Task Management Table** with status toggling, category & priority badges, and item deletion.
@@ -44,6 +44,7 @@ web_development_training/
 │   └── main.jsx            # Application entry point
 ├── DAY1_COMPONENT_TREE.md  # Official Day 1 Component Tree Sketch
 ├── DAY1_MENTOR_WALKTHROUGH.md # Step-by-step mentor explanation & Q&A guide
+├── Day1_React_Foundations_and_Architecture_Guide.pdf # 6-Page Architectural Publication
 ├── package.json
 └── vite.config.js
 ```
@@ -78,6 +79,7 @@ npm run build
 
 - **Component Tree Sketch:** See [DAY1_COMPONENT_TREE.md](file:///d:/PugArch/web_development_training/DAY1_COMPONENT_TREE.md) for the Mermaid diagram, ASCII hierarchy, and props/state table.
 - **Mentor Defense Guide:** See [DAY1_MENTOR_WALKTHROUGH.md](file:///d:/PugArch/web_development_training/DAY1_MENTOR_WALKTHROUGH.md) for conceptual explanations, architectural decisions, and anticipated mentor questions with ready answers.
+- **Comprehensive Theory PDF:** See [Day1_React_Foundations_and_Architecture_Guide.pdf](file:///d:/PugArch/web_development_training/Day1_React_Foundations_and_Architecture_Guide.pdf) for the 6-page printable report.
 
 ---
 
