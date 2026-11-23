@@ -14,7 +14,7 @@ import './NewTaskModal.css';
 export default function NewTaskModal({ isOpen, onClose, onAddTask }) {
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('Frontend');
-  const [assignee, setAssignee] = useState('Bhushan S.');
+  const [assignee, setAssignee] = useState('Bhushan B.');
   const [priority, setPriority] = useState('Medium');
   const [dueDate, setDueDate] = useState('Today, 5:00 PM');
   const [error, setError] = useState('');

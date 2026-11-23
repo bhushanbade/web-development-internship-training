@@ -1,6 +1,6 @@
 # Day 1 Mentor Walkthrough & Technical Defense Guide
 
-This guide is prepared for **Bhushan Sonawane** to confidently explain Day 1 work, architectural decisions, and React fundamentals to mentors or senior engineers during code review.
+This guide is prepared for **Bhushan Bade** to confidently explain Day 1 work, architectural decisions, and React fundamentals to mentors or senior engineers during code review.
 
 ---
 

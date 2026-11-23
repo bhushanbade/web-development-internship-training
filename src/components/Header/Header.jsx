@@ -14,7 +14,7 @@ import './Header.css';
 export default function Header({
   pageTitle = 'Dashboard Overview',
   pageSubtitle = 'Monitor operational metrics and track sprint deliveries',
-  user = { name: 'Bhushan Sonawane', role: 'Full Stack Intern', initials: 'BS' },
+  user = { name: 'Bhushan Bade', role: 'Full Stack Intern', initials: 'BB' },
   searchQuery = '',
   onSearchChange,
   onNewTaskClick,

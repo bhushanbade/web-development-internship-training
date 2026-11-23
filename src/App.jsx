@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { 
-  CheckSquare, 
-  CheckCircle2, 
-  Layers, 
-  Users, 
+import {
+  CheckSquare,
+  CheckCircle2,
+  Layers,
+  Users,
   Filter,
   Check,
   Clock,
@@ -109,14 +109,15 @@ function App() {
             activeTab === 'overview'
               ? 'Executive Dashboard'
               : activeTab === 'tasks'
-              ? 'Task & Sprint Management'
-              : activeTab === 'team'
-              ? 'Team Directory'
-              : activeTab === 'analytics'
-              ? 'Velocity & Performance'
-              : 'Settings & Environment'
+                ? 'Task & Sprint Management'
+                : activeTab === 'team'
+                  ? 'Team Directory'
+                  : activeTab === 'analytics'
+                    ? 'Velocity & Performance'
+                    : 'Settings & Environment'
           }
           pageSubtitle="PugArch Web Development Intern Capstone - Day 1 Architecture"
+          user={{ name: 'Bhushan Bade', role: 'Full Stack Intern', initials: 'BB' }}
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
           onNewTaskClick={() => setIsTaskModalOpen(true)}
@@ -231,9 +232,9 @@ function App() {
                       Showing {filteredTasks.length} of {tasks.length} total tasks
                     </p>
                   </div>
-                  <Button 
-                    variant="secondary" 
-                    size="small" 
+                  <Button
+                    variant="secondary"
+                    size="small"
                     onClick={() => setIsTaskModalOpen(true)}
                   >
                     + Add Row
@@ -257,7 +258,7 @@ function App() {
                   </div>
                   <div className="panel-card__body">
                     <pre className="tree-preview">
-{`App (State: tab, filter, tasks)
+                      {`App (State: tab, filter, tasks)
 ├── Sidebar (Nav Items)
 ├── Header (Title, User, Search)
 ├── FilterToolbar (Timeframe)
@@ -284,9 +285,9 @@ function App() {
                   </div>
                   <ul className="team-roster">
                     <li className="team-roster__item">
-                      <div className="team-roster__avatar">BS</div>
+                      <div className="team-roster__avatar">BB</div>
                       <div className="team-roster__info">
-                        <span className="team-roster__name">Bhushan Sonawane</span>
+                        <span className="team-roster__name">Bhushan Bade</span>
                         <span className="team-roster__role">Full Stack Intern</span>
                       </div>
                       <Badge variant="success" size="small">Lead</Badge>
@@ -320,9 +321,9 @@ function App() {
                   <h3 className="section-title">All Project Tasks</h3>
                   <p className="section-subtitle">Manage assignments, priorities, and deadlines</p>
                 </div>
-                <Button 
-                  variant="primary" 
-                  size="medium" 
+                <Button
+                  variant="primary"
+                  size="medium"
                   onClick={() => setIsTaskModalOpen(true)}
                 >
                   + Create New Task
@@ -346,7 +347,7 @@ function App() {
               </div>
               <div className="team-grid">
                 {[
-                  { name: 'Bhushan Sonawane', role: 'Full Stack Intern', focus: 'React, TypeScript, APIs', avatar: 'BS' },
+                  { name: 'Bhushan Bade', role: 'Full Stack Intern', focus: 'React, TypeScript, APIs', avatar: 'BB' },
                   { name: 'Alex Rivera', role: 'Frontend Engineer', focus: 'UI Systems & Accessibility', avatar: 'AR' },
                   { name: 'Sarah Chen', role: 'Backend Engineer', focus: 'Express, PostgreSQL, Laravel', avatar: 'SC' },
                   { name: 'David Kim', role: 'DevOps & QA', focus: 'CI/CD, Testing Library', avatar: 'DK' },

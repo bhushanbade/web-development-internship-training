@@ -44,7 +44,7 @@ export const initialTasks = [
     id: 1,
     title: "Setup PostgreSQL database schema for authentication",
     category: "Backend",
-    assignee: "Bhushan S.",
+    assignee: "Bhushan B.",
     priority: "High",
     status: "In Progress",
     dueDate: "Today, 5:00 PM"
@@ -62,7 +62,7 @@ export const initialTasks = [
     id: 3,
     title: "Review Day 1 React component architecture with mentor",
     category: "Training",
-    assignee: "Bhushan S.",
+    assignee: "Bhushan B.",
     priority: "High",
     status: "Pending",
     dueDate: "Today, 6:00 PM"
