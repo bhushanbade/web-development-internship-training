@@ -1,0 +1,160 @@
+.task-list {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.task-list__table-wrapper {
+  overflow-x: auto;
+}
+
+.task-list__table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.875rem;
+}
+
+.task-list__th {
+  background-color: #f9fafb;
+  color: #4b5563;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.task-list__th--status {
+  width: 50px;
+  text-align: center;
+}
+
+.task-list__th--actions {
+  text-align: center;
+  width: 70px;
+}
+
+.task-list__row {
+  border-bottom: 1px solid #f3f4f6;
+  transition: background-color 0.15s ease;
+}
+
+.task-list__row:hover {
+  background-color: #f9fafb;
+}
+
+.task-list__row--completed {
+  background-color: #fafafa;
+  opacity: 0.85;
+}
+
+.task-list__td {
+  padding: 0.85rem 1rem;
+  color: #374151;
+  vertical-align: middle;
+}
+
+.task-list__td--actions {
+  text-align: center;
+}
+
+/* Status toggle check button */
+.task-list__status-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+.task-list__status-toggle:hover {
+  color: #2563eb;
+  transform: scale(1.1);
+}
+
+.task-list__status-toggle--done {
+  color: #059669 !important;
+}
+
+/* Title group */
+.task-list__title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.task-list__item-title {
+  font-weight: 600;
+  color: #111827;
+}
+
+.task-list__item-title--strikethrough {
+  text-decoration: line-through;
+  color: #6b7280;
+}
+
+.task-list__meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #4b5563;
+  font-size: 0.8125rem;
+}
+
+.task-list__meta-icon {
+  color: #9ca3af;
+}
+
+/* Action button */
+.task-list__action-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+  color: #9ca3af;
+}
+
+.task-list__action-btn--delete:hover {
+  background-color: #fee2e2;
+  color: #ef4444;
+}
+
+/* Empty State */
+.task-list__empty {
+  padding: 3rem 1.5rem;
+  text-align: center;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px dashed #d1d5db;
+}
+
+.task-list__empty-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.task-list__empty-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 0.35rem 0;
+}
+
+.task-list__empty-desc {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0;
+}
