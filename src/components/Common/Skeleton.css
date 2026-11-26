@@ -1,0 +1,43 @@
+.skeleton {
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 37%, #f1f5f9 63%);
+  background-size: 400% 100%;
+  border-radius: 6px;
+  animation: skeletonPulse 1.4s ease infinite;
+}
+
+.skeleton--text {
+  border-radius: 4px;
+}
+
+.skeleton--pill {
+  border-radius: 9999px;
+}
+
+.skeleton--avatar {
+  border-radius: 50%;
+}
+
+.skeleton--card {
+  border-radius: 12px;
+}
+
+.skeleton-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  width: 100%;
+}
+
+.skeleton-task-row td {
+  padding: 1rem;
+  vertical-align: middle;
+}
+
+@keyframes skeletonPulse {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0 50%;
+  }
+}

@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
-import {
-  CheckSquare,
-  CheckCircle2,
-  Layers,
-  Users,
-  Filter,
-  Check,
-  Clock,
-  Code2
+import React, { useState, useEffect, useCallback } from 'react';
+import { 
+  CheckSquare, 
+  CheckCircle2, 
+  Layers, 
+  Users, 
+  Filter, 
+  Check, 
+  Clock, 
+  Code2, 
+  RotateCcw 
 } from 'lucide-react';
 
 // Subcomponents
@@ -18,77 +19,155 @@ import TaskList from './components/TaskList/TaskList';
 import NewTaskModal from './components/Modal/NewTaskModal';
 import Button from './components/Common/Button';
 import Badge from './components/Common/Badge';
+import Toast from './components/Common/Toast';
 
-// Mock Data
-import { initialStats, initialTasks, navigationItems } from './data/mockData';
+// API Service & Initial Data
+import { fetchTasks, createTask, updateTaskStatus, deleteTask } from './services/api';
+import { initialStats, navigationItems } from './data/mockData';
 import './App.css';
 
 /**
- * App Component - Root Component for Day 1 Hands-on Task.
+ * App Component — PugArch OpsHub Controller (Day 2 Milestone).
  * 
  * Demonstrates:
- * 1. Functional Components: Pure, readable functions returning JSX.
- * 2. State Management (useState):
- *    - activeTab: controls which view is currently displayed.
- *    - isSidebarCollapsed: toggles sidebar width between expanded and compact.
- *    - filterPeriod: switches summary metrics between 'today', 'week', and 'month'.
- *    - searchQuery: controls search term and filters task items in real-time.
- *    - isTaskModalOpen: controls visibility of the task creation dialog.
- *    - tasks: stores array of tasks, demonstrating immutable state updates.
- * 3. Props: Passing values, objects, and callback functions down to children.
- * 4. Events: Handling user clicks, inputs, and form submissions.
- * 5. Component Composition: Composing independent components into a cohesive dashboard.
+ * 1. Controlled Forms & Field Validation (in NewTaskModal).
+ * 2. Asynchronous State Management via useEffect:
+ *    - Loading state (isLoading)
+ *    - Error state (error & retry)
+ *    - Empty state (handled when filtered data has length 0)
+ *    - Success state (toast feedback notifications)
+ * 3. Lifecycle Cleanup & Race Condition Mitigation:
+ *    - AbortController signal passed to API
+ *    - Effect cleanup aborting in-flight fetch on unmount / re-render
+ * 4. Real-time debounced search & multi-criteria filtering.
  */
 function App() {
   // 1. Navigation State
   const [activeTab, setActiveTab] = useState('overview');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
-  // 2. Metrics & Filtering State
+  // 2. Metrics Timeframe Filter
   const [filterPeriod, setFilterPeriod] = useState('today');
+
+  // 3. Search & Multi-criteria Filter State
   const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [priorityFilter, setPriorityFilter] = useState('all');
+  const [categoryFilter, setCategoryFilter] = useState('all');
 
-  // 3. Modal State
+  // 4. API Asynchronous State (The 4 UI States)
+  const [tasks, setTasks] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  // 5. Mentor Testing Controls State
+  const [simulateApiError, setSimulateApiError] = useState(false);
+  const [slowNetwork, setSlowNetwork] = useState(false);
+
+  // 6. Modal & Toast Notifications
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const [toast, setToast] = useState({ message: '', type: 'success' });
 
-  // 4. Tasks State (Immutable CRUD operations)
-  const [tasks, setTasks] = useState(initialTasks);
+  // 7. Core useEffect: Asynchronous Data Synchronization with AbortController
+  useEffect(() => {
+    // Instantiate AbortController to cancel stale in-flight network requests
+    const controller = new AbortController();
 
-  // Dynamic calculations based on state
-  const completedCount = tasks.filter((t) => t.status === 'Completed').length;
-  const inProgressCount = tasks.filter((t) => t.status === 'In Progress').length;
+    // Debounce timer (280ms) to avoid firing requests on every single keystroke
+    const debounceTimer = setTimeout(() => {
+      setIsLoading(true);
+      setError(null);
+
+      fetchTasks({
+        search: searchQuery,
+        status: statusFilter,
+        priority: priorityFilter,
+        category: categoryFilter,
+        delayMs: slowNetwork ? 1500 : 500,
+        simulateError: simulateApiError,
+        signal: controller.signal
+      })
+        .then((res) => {
+          setTasks(res.data);
+          setIsLoading(false);
+        })
+        .catch((err) => {
+          // If aborted by cleanup, ignore the rejection to prevent race condition state updates
+          if (err.name === 'AbortError') {
+            return;
+          }
+          setError(err);
+          setIsLoading(false);
+        });
+    }, 280);
+
+    // Cleanup Function: Executed before the next effect run or component unmount
+    return () => {
+      clearTimeout(debounceTimer);
+      controller.abort(); // Cancel the HTTP request in transit
+    };
+  }, [searchQuery, statusFilter, priorityFilter, categoryFilter, slowNetwork, simulateApiError, refreshKey]);
+
+  // Derived Metrics for KPI Summary Cards
+  const completedCount = tasks.filter((t) => t.status?.toLowerCase() === 'completed').length;
+  const inProgressCount = tasks.filter((t) => t.status?.toLowerCase() === 'in progress').length;
   const currentPeriodStats = initialStats[filterPeriod];
 
-  // Filtered tasks based on search input
-  const filteredTasks = tasks.filter((task) => {
-    const query = searchQuery.toLowerCase();
-    return (
-      task.title.toLowerCase().includes(query) ||
-      task.category.toLowerCase().includes(query) ||
-      task.assignee.toLowerCase().includes(query) ||
-      task.priority.toLowerCase().includes(query)
-    );
-  });
+  // Action Handlers
+  const handleRetry = useCallback(() => {
+    setSimulateApiError(false); // Reset error simulation on manual retry
+    setRefreshKey((prev) => prev + 1);
+  }, []);
 
-  // Event Handlers (demonstrating lifting state up)
-  const handleToggleTaskStatus = (taskId) => {
-    setTasks((prevTasks) =>
-      prevTasks.map((task) => {
-        if (task.id === taskId) {
-          const nextStatus = task.status === 'Completed' ? 'In Progress' : 'Completed';
-          return { ...task, status: nextStatus };
-        }
-        return task;
-      })
-    );
+  const handleResetFilters = useCallback(() => {
+    setSearchQuery('');
+    setStatusFilter('all');
+    setPriorityFilter('all');
+    setCategoryFilter('all');
+  }, []);
+
+  const handleToggleTaskStatus = async (taskId, newStatus) => {
+    try {
+      const updated = await updateTaskStatus(taskId, newStatus);
+      setTasks((prev) => prev.map((t) => (t.id === taskId ? updated : t)));
+      setToast({
+        message: `Task status updated to "${newStatus}"!`,
+        type: 'success'
+      });
+    } catch {
+      setToast({
+        message: 'Failed to update task status.',
+        type: 'error'
+      });
+    }
   };
 
-  const handleDeleteTask = (taskId) => {
-    setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
+  const handleDeleteTask = async (taskId) => {
+    try {
+      await deleteTask(taskId);
+      setTasks((prev) => prev.filter((t) => t.id !== taskId));
+      setToast({
+        message: 'Task removed from sprint database.',
+        type: 'info'
+      });
+    } catch {
+      setToast({
+        message: 'Failed to delete task.',
+        type: 'error'
+      });
+    }
   };
 
-  const handleAddNewTask = (newTask) => {
-    setTasks((prevTasks) => [newTask, ...prevTasks]);
+  const handleAddNewTask = async (taskData, shouldSimulateServerError) => {
+    const created = await createTask(taskData, {
+      simulateError: shouldSimulateServerError
+    });
+    setTasks((prev) => [created, ...prev]);
+    setToast({
+      message: `Task "${created.title}" successfully created via API POST!`,
+      type: 'success'
+    });
   };
 
   return (
@@ -107,44 +186,46 @@ function App() {
         <Header
           pageTitle={
             activeTab === 'overview'
-              ? 'Executive Dashboard'
+              ? 'Executive Dashboard & API Explorer'
               : activeTab === 'tasks'
-                ? 'Task & Sprint Management'
+                ? 'Task & Sprint Management (Async View)'
                 : activeTab === 'team'
                   ? 'Team Directory'
                   : activeTab === 'analytics'
                     ? 'Velocity & Performance'
                     : 'Settings & Environment'
           }
-          pageSubtitle="PugArch Web Development Intern Capstone - Day 1 Architecture"
+          pageSubtitle="PugArch Web Development Intern Capstone — Day 2: React Forms & API State"
           user={{ name: 'Bhushan Bade', role: 'Full Stack Intern', initials: 'BB' }}
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
           onNewTaskClick={() => setIsTaskModalOpen(true)}
-          notificationCount={3}
+          notificationCount={tasks.length}
         />
 
         {/* 3. Main Dashboard Content Area */}
         <main className="app-content">
-          {/* Day 1 Concept Showcase Banner */}
+          {/* Day 2 Concept Showcase Banner */}
           <section className="learning-banner">
             <div className="learning-banner__content">
               <div className="learning-banner__tag">
                 <Code2 size={15} />
-                <span>Day 1 Milestones Accomplished</span>
+                <span>Day 2 Milestones Accomplished</span>
               </div>
               <h2 className="learning-banner__title">
-                React Foundations & Component Thinking
+                React Forms, Validation & Asynchronous API State
               </h2>
               <p className="learning-banner__desc">
-                Built with JSX, functional components, unidirectional props flow, and local state management (<code>useState</code>). All components adhere to clean composition patterns.
+                Integrated <code>useEffect</code> with <code>AbortController</code> lifecycle cleanup, 
+                multi-criteria search filtering, controlled form validation, and all 4 essential UI states: 
+                <strong> Loading (Skeletons)</strong>, <strong>Error (with Retry)</strong>, <strong>Empty (Search/No Data)</strong>, and <strong>Success (Toast Notifications)</strong>.
               </p>
             </div>
             <div className="learning-banner__badges">
-              <Badge variant="info">Functional Components</Badge>
-              <Badge variant="success">Unidirectional Props</Badge>
-              <Badge variant="warning">Controlled Inputs</Badge>
-              <Badge variant="neutral">Modular CSS</Badge>
+              <Badge variant="info">useEffect & AbortSignal</Badge>
+              <Badge variant="warning">Controlled Form & Touch</Badge>
+              <Badge variant="success">4 UI States Integrated</Badge>
+              <Badge variant="neutral">Debounced Search API</Badge>
             </div>
           </section>
 
@@ -153,7 +234,7 @@ function App() {
             <div className="filter-toolbar__left">
               <span className="filter-toolbar__label">
                 <Filter size={15} />
-                <span>Timeframe:</span>
+                <span>Summary Timeframe:</span>
               </span>
               <div className="filter-toolbar__buttons">
                 {['today', 'week', 'month'].map((period) => (
@@ -172,7 +253,9 @@ function App() {
             <div className="filter-toolbar__right">
               <span className="filter-toolbar__timestamp">
                 <Clock size={14} />
-                <span>Live View &bull; Period: {filterPeriod.toUpperCase()}</span>
+                <span>
+                  {isLoading ? 'Fetching API data...' : `API Sync Active • ${tasks.length} live records`}
+                </span>
               </span>
             </div>
           </section>
@@ -180,13 +263,13 @@ function App() {
           {/* 4. Reusable Summary Cards Grid */}
           <section className="summary-cards-grid">
             <SummaryCard
-              title="Total Tasks"
+              title="Active API Tasks"
               value={filterPeriod === 'today' ? tasks.length : currentPeriodStats.totalTasks}
               change={currentPeriodStats.trends.totalTasks}
               changeType="positive"
               icon={CheckSquare}
               accentColor="#2563eb"
-              trendLabel="active items"
+              trendLabel="retrieved from service"
             />
 
             <SummaryCard
@@ -223,56 +306,87 @@ function App() {
           {/* Tab Specific Views */}
           {activeTab === 'overview' && (
             <div className="dashboard-grid">
-              {/* Left Column: Tasks List */}
+              {/* Left Column: Searchable API Task List */}
               <div className="dashboard-grid__left">
                 <div className="section-header">
                   <div>
-                    <h3 className="section-title">Sprint Tasks</h3>
+                    <h3 className="section-title">Sprint Explorer & API Data View</h3>
                     <p className="section-subtitle">
-                      Showing {filteredTasks.length} of {tasks.length} total tasks
+                      Asynchronous list view demonstrating useEffect fetch, skeletons, and error retry
                     </p>
                   </div>
-                  <Button
-                    variant="secondary"
-                    size="small"
-                    onClick={() => setIsTaskModalOpen(true)}
-                  >
-                    + Add Row
-                  </Button>
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <Button 
+                      variant="secondary" 
+                      size="small" 
+                      icon={RotateCcw} 
+                      onClick={handleRetry}
+                      disabled={isLoading}
+                    >
+                      Refresh API
+                    </Button>
+                    <Button 
+                      variant="primary" 
+                      size="small" 
+                      onClick={() => setIsTaskModalOpen(true)}
+                    >
+                      + Add Task
+                    </Button>
+                  </div>
                 </div>
 
                 <TaskList
-                  tasks={filteredTasks}
+                  tasks={tasks}
+                  isLoading={isLoading}
+                  error={error}
+                  onRetry={handleRetry}
                   onToggleStatus={handleToggleTaskStatus}
                   onDeleteTask={handleDeleteTask}
+                  searchQuery={searchQuery}
+                  onSearchChange={setSearchQuery}
+                  statusFilter={statusFilter}
+                  onStatusFilterChange={setStatusFilter}
+                  priorityFilter={priorityFilter}
+                  onPriorityFilterChange={setPriorityFilter}
+                  categoryFilter={categoryFilter}
+                  onCategoryFilterChange={setCategoryFilter}
+                  onResetFilters={handleResetFilters}
+                  onOpenCreateModal={() => setIsTaskModalOpen(true)}
+                  simulateError={simulateApiError}
+                  onToggleSimulateError={setSimulateApiError}
+                  slowNetwork={slowNetwork}
+                  onToggleSlowNetwork={setSlowNetwork}
                 />
               </div>
 
-              {/* Right Column: Day 1 Component Tree Inspector & Team Widget */}
+              {/* Right Column: Day 2 Concept Inspector & Architecture Card */}
               <aside className="dashboard-grid__right">
-                {/* Component Architecture Card */}
+                {/* Async Lifecycle Inspector Panel */}
                 <div className="panel-card">
                   <div className="panel-card__header">
-                    <h4 className="panel-card__title">Component Tree Structure</h4>
-                    <Badge variant="info" size="small">Day 1 Spec</Badge>
+                    <h4 className="panel-card__title">Day 2 Async Architecture</h4>
+                    <Badge variant="info" size="small">useEffect Specs</Badge>
                   </div>
                   <div className="panel-card__body">
                     <pre className="tree-preview">
-                      {`App (State: tab, filter, tasks)
-├── Sidebar (Nav Items)
-├── Header (Title, User, Search)
-├── FilterToolbar (Timeframe)
-├── SummaryCards Grid
-│   ├── SummaryCard (Total)
-│   ├── SummaryCard (Done)
-│   ├── SummaryCard (Sprints)
-│   └── SummaryCard (Velocity)
-├── TaskList (Filtered Tasks)
-│   └── TaskRow[] ── Badge
-└── NewTaskModal (Controlled Form)`}
+{`useEffect Flow & Cleanup:
+┌───────────────────────────────┐
+│ 1. Component Mount / Param 🔄 │
+├───────────────────────────────┤
+│ const ctrl = new Controller() │
+│ setIsLoading(true)            │
+│ setTimeout(debounceTimer, 280)│
+├───────────────────────────────┤
+│ 2. Fetch API with signal      │
+│ fetchTasks({ signal: ctrl })  │
+├───────────────────────────────┤
+│ 3. Cleanup on Re-render/Unmt  │
+│ clearTimeout(timer)           │
+│ ctrl.abort() // Cancel stale! │
+└───────────────────────────────┘`}
                     </pre>
                     <p className="tree-description">
-                      Data flows downwards via <strong>props</strong>. User actions emit events upward to update parent state via <strong>callbacks</strong>.
+                      The <strong>AbortController</strong> prevents stale race conditions when typing quickly. The 4 UI states (Loading, Error, Empty, Success) ensure robust user feedback.
                     </p>
                   </div>
                 </div>
@@ -280,8 +394,8 @@ function App() {
                 {/* Team Quick Info Card */}
                 <div className="panel-card">
                   <div className="panel-card__header">
-                    <h4 className="panel-card__title">Team Roster</h4>
-                    <span className="panel-card__meta">4 Online</span>
+                    <h4 className="panel-card__title">Team Directory</h4>
+                    <span className="panel-card__meta">4 Active</span>
                   </div>
                   <ul className="team-roster">
                     <li className="team-roster__item">
@@ -318,21 +432,38 @@ function App() {
             <div className="tab-pane">
               <div className="section-header">
                 <div>
-                  <h3 className="section-title">All Project Tasks</h3>
-                  <p className="section-subtitle">Manage assignments, priorities, and deadlines</p>
+                  <h3 className="section-title">All Project Tasks (API Data View)</h3>
+                  <p className="section-subtitle">Real-time searchable list view with filtering and status controls</p>
                 </div>
-                <Button
-                  variant="primary"
-                  size="medium"
+                <Button 
+                  variant="primary" 
+                  size="medium" 
                   onClick={() => setIsTaskModalOpen(true)}
                 >
                   + Create New Task
                 </Button>
               </div>
               <TaskList
-                tasks={filteredTasks}
+                tasks={tasks}
+                isLoading={isLoading}
+                error={error}
+                onRetry={handleRetry}
                 onToggleStatus={handleToggleTaskStatus}
                 onDeleteTask={handleDeleteTask}
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+                statusFilter={statusFilter}
+                onStatusFilterChange={setStatusFilter}
+                priorityFilter={priorityFilter}
+                onPriorityFilterChange={setPriorityFilter}
+                categoryFilter={categoryFilter}
+                onCategoryFilterChange={setCategoryFilter}
+                onResetFilters={handleResetFilters}
+                onOpenCreateModal={() => setIsTaskModalOpen(true)}
+                simulateError={simulateApiError}
+                onToggleSimulateError={setSimulateApiError}
+                slowNetwork={slowNetwork}
+                onToggleSlowNetwork={setSlowNetwork}
               />
             </div>
           )}
@@ -341,13 +472,13 @@ function App() {
             <div className="tab-pane">
               <div className="section-header">
                 <div>
-                  <h3 className="section-title">Engineering Team</h3>
-                  <p className="section-subtitle">Current active contributors for the 20-Day sprint</p>
+                  <h3 className="section-title">Engineering Team Directory</h3>
+                  <p className="section-subtitle">Sprint contributors and module owners</p>
                 </div>
               </div>
               <div className="team-grid">
                 {[
-                  { name: 'Bhushan Bade', role: 'Full Stack Intern', focus: 'React, TypeScript, APIs', avatar: 'BB' },
+                  { name: 'Bhushan Bade', role: 'Full Stack Intern', focus: 'React Forms, API State, useEffect', avatar: 'BB' },
                   { name: 'Alex Rivera', role: 'Frontend Engineer', focus: 'UI Systems & Accessibility', avatar: 'AR' },
                   { name: 'Sarah Chen', role: 'Backend Engineer', focus: 'Express, PostgreSQL, Laravel', avatar: 'SC' },
                   { name: 'David Kim', role: 'DevOps & QA', focus: 'CI/CD, Testing Library', avatar: 'DK' },
@@ -368,8 +499,8 @@ function App() {
             <div className="tab-pane">
               <div className="panel-card">
                 <div className="panel-card__header">
-                  <h4 className="panel-card__title">Sprint Performance Overview</h4>
-                  <Badge variant="success">96% On Track</Badge>
+                  <h4 className="panel-card__title">Sprint Performance Overview (Live API Metrics)</h4>
+                  <Badge variant="success">98% On Track</Badge>
                 </div>
                 <div className="analytics-summary">
                   <div className="analytics-metric">
@@ -395,25 +526,25 @@ function App() {
             <div className="tab-pane">
               <div className="panel-card">
                 <div className="panel-card__header">
-                  <h4 className="panel-card__title">Curriculum & Mentor Verification Checklist</h4>
+                  <h4 className="panel-card__title">Curriculum Progress Checklist</h4>
                 </div>
                 <div className="settings-checklist">
                   <div className="checklist-item checklist-item--done">
                     <Check className="check-icon" size={18} />
                     <div>
-                      <strong>Day 1 Goal:</strong> Build a small component-based interface with reusable Header, Navigation, and Summary Cards.
+                      <strong>Day 1 Goal (Completed):</strong> React foundations, reusable Header, Navigation, and Summary Cards.
                     </div>
                   </div>
                   <div className="checklist-item checklist-item--done">
                     <Check className="check-icon" size={18} />
                     <div>
-                      <strong>Topics Verified:</strong> JSX syntax, Functional Components, Props passing, Local State, and Event handlers.
+                      <strong>Day 2 Goal (Completed):</strong> Controlled forms, validation, useEffect cleanup with AbortController, and the 4 UI states (Loading, Error, Empty, Success).
                     </div>
                   </div>
                   <div className="checklist-item">
                     <Clock className="pending-icon" size={18} />
                     <div>
-                      <strong>Day 2 Upcoming:</strong> React forms, validation, and API fetch state (useEffect).
+                      <strong>Day 3 Upcoming:</strong> TypeScript Essentials: primitive/union types, interfaces, typing props, and API response contracts.
                     </div>
                   </div>
                 </div>
@@ -423,11 +554,18 @@ function App() {
         </main>
       </div>
 
-      {/* 5. Controlled Modal for Adding Tasks */}
+      {/* 5. Controlled Modal for Adding Tasks (POST simulation) */}
       <NewTaskModal
         isOpen={isTaskModalOpen}
         onClose={() => setIsTaskModalOpen(false)}
         onAddTask={handleAddNewTask}
+      />
+
+      {/* 6. Success Toast Notification */}
+      <Toast
+        message={toast.message}
+        type={toast.type}
+        onClose={() => setToast({ message: '', type: 'success' })}
       />
     </div>
   );

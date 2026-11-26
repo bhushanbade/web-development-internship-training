@@ -1,7 +1,178 @@
+.task-view-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* 1. Mentor Testing Toolbar */
+.mentor-toolbar {
+  background: linear-gradient(135deg, #fef2f2 0%, #fff1f2 100%);
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  padding: 0.65rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.mentor-toolbar__label {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #991b1b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.mentor-toolbar__icon {
+  color: #ef4444;
+}
+
+.mentor-toolbar__toggles {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.mentor-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.mentor-toggle__text {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #4b5563;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.mentor-toggle input:checked + .mentor-toggle__text {
+  color: #1d4ed8;
+}
+
+.mentor-toggle--danger input:checked + .mentor-toggle__text {
+  color: #b91c1c;
+  font-weight: 700;
+}
+
+/* 2. Filter Bar */
+.task-filter-bar {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.task-filter-bar__search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 260px;
+}
+
+.task-filter-bar__search-icon {
+  position: absolute;
+  left: 0.75rem;
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.task-filter-bar__search-input {
+  width: 100%;
+  padding: 0.5rem 2rem 0.5rem 2.25rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-family: inherit;
+  color: #0f172a;
+  background-color: #f8fafc;
+  outline: none;
+  transition: all 0.15s ease;
+}
+
+.task-filter-bar__search-input:focus {
+  background-color: #ffffff;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.task-filter-bar__clear-btn {
+  position: absolute;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 1.15rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+}
+
+.task-filter-bar__clear-btn:hover {
+  color: #0f172a;
+}
+
+.task-filter-bar__selects {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.select-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.select-icon {
+  position: absolute;
+  left: 0.65rem;
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.filter-select {
+  padding: 0.45rem 0.85rem 0.45rem 1.85rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background-color: #ffffff;
+  font-size: 0.8125rem;
+  font-family: inherit;
+  color: #334155;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.select-wrapper:not(:has(.select-icon)) .filter-select {
+  padding-left: 0.75rem;
+}
+
+.filter-select:focus {
+  border-color: #2563eb;
+}
+
+/* 3. Table Layout */
 .task-list {
   background: #ffffff;
   border-radius: 12px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #e2e8f0;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   overflow: hidden;
 }
@@ -18,14 +189,14 @@
 }
 
 .task-list__th {
-  background-color: #f9fafb;
-  color: #4b5563;
+  background-color: #f8fafc;
+  color: #475569;
   font-weight: 600;
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   padding: 0.85rem 1rem;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .task-list__th--status {
@@ -39,22 +210,22 @@
 }
 
 .task-list__row {
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid #f1f5f9;
   transition: background-color 0.15s ease;
 }
 
 .task-list__row:hover {
-  background-color: #f9fafb;
+  background-color: #f8fafc;
 }
 
 .task-list__row--completed {
-  background-color: #fafafa;
-  opacity: 0.85;
+  background-color: #fafbfc;
+  opacity: 0.82;
 }
 
 .task-list__td {
-  padding: 0.85rem 1rem;
-  color: #374151;
+  padding: 0.95rem 1rem;
+  color: #334155;
   vertical-align: middle;
 }
 
@@ -62,12 +233,12 @@
   text-align: center;
 }
 
-/* Status toggle check button */
+/* Status toggle checkbox */
 .task-list__status-toggle {
   background: none;
   border: none;
   cursor: pointer;
-  color: #9ca3af;
+  color: #94a3b8;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -86,7 +257,7 @@
   color: #059669 !important;
 }
 
-/* Title group */
+/* Title & Description */
 .task-list__title-group {
   display: flex;
   align-items: center;
@@ -96,27 +267,35 @@
 
 .task-list__item-title {
   font-weight: 600;
-  color: #111827;
+  color: #0f172a;
 }
 
 .task-list__item-title--strikethrough {
   text-decoration: line-through;
-  color: #6b7280;
+  color: #64748b;
+}
+
+.task-list__item-desc {
+  font-size: 0.78rem;
+  color: #64748b;
+  margin: 0.25rem 0 0 0;
+  line-height: 1.4;
+  max-width: 500px;
 }
 
 .task-list__meta-item {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  color: #4b5563;
+  color: #475569;
   font-size: 0.8125rem;
 }
 
 .task-list__meta-icon {
-  color: #9ca3af;
+  color: #94a3b8;
 }
 
-/* Action button */
+/* Actions */
 .task-list__action-btn {
   background: none;
   border: none;
@@ -124,37 +303,10 @@
   padding: 6px;
   border-radius: 6px;
   transition: all 0.15s ease;
-  color: #9ca3af;
+  color: #94a3b8;
 }
 
 .task-list__action-btn--delete:hover {
   background-color: #fee2e2;
   color: #ef4444;
-}
-
-/* Empty State */
-.task-list__empty {
-  padding: 3rem 1.5rem;
-  text-align: center;
-  background: #ffffff;
-  border-radius: 12px;
-  border: 1px dashed #d1d5db;
-}
-
-.task-list__empty-icon {
-  font-size: 2.5rem;
-  margin-bottom: 0.5rem;
-}
-
-.task-list__empty-title {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: #111827;
-  margin: 0 0 0.35rem 0;
-}
-
-.task-list__empty-desc {
-  font-size: 0.875rem;
-  color: #6b7280;
-  margin: 0;
 }
