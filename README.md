@@ -6,8 +6,8 @@
 
 ## 📌 Progress Status
 
-- ✅ **Day 1: React Foundations & Component Thinking** (Completed — Reusable components, state, events, component tree sketch)
-- ✅ **Day 2: React Forms and API State** (Completed — Controlled forms, validation, `useEffect`, `AbortController`, 4 UI states: Loading, Error, Empty, Success)
+- ✅ **Day 1: React Foundations & Component Thinking** (Completed — Reusable components, props, state, events, and component tree sketch)
+- ✅ **Day 2: React Forms and API State** (Completed — Controlled forms, validation, `useEffect`, `AbortController`, and the 4 UI states: Loading, Error, Empty, Success)
 - ⏳ **Day 3: TypeScript Essentials** (Upcoming — Converting components, props, events, and API response contracts to TypeScript)
 
 ---
@@ -41,10 +41,6 @@ web_development_training/
 │   ├── index.css           # Global reset and typography
 │   └── main.jsx            # Application entry point
 ├── DAY1_COMPONENT_TREE.md  # Official Day 1 Component Tree Sketch
-├── DAY1_MENTOR_WALKTHROUGH.md # Day 1 Mentor Walkthrough & Q&A Guide
-├── DAY2_MENTOR_WALKTHROUGH.md # Day 2 Mentor Defense & Architecture Guide
-├── Day1_React_Foundations_and_Architecture_Guide.pdf # Day 1 6-Page PDF Publication
-├── Day2_React_Forms_and_API_State_Guide.pdf        # Day 2 6-Page PDF Publication
 ├── vercel.json             # Vercel deployment configuration
 ├── package.json
 └── vite.config.js
@@ -76,17 +72,23 @@ npm run build
 
 ---
 
-## 📚 Daily Deliverables & Mentor Review Materials
+## 📚 End-of-Day Submissions & Architecture
 
-- **Day 1 Component Tree:** [DAY1_COMPONENT_TREE.md](file:///d:/PugArch/web_development_training/DAY1_COMPONENT_TREE.md)
-- **Day 1 Mentor Guide:** [DAY1_MENTOR_WALKTHROUGH.md](file:///d:/PugArch/web_development_training/DAY1_MENTOR_WALKTHROUGH.md)
-- **Day 1 PDF Report:** [Day1_React_Foundations_and_Architecture_Guide.pdf](file:///d:/PugArch/web_development_training/Day1_React_Foundations_and_Architecture_Guide.pdf)
-- **Day 2 Mentor Guide:** [DAY2_MENTOR_WALKTHROUGH.md](file:///d:/PugArch/web_development_training/DAY2_MENTOR_WALKTHROUGH.md)
-- **Day 2 PDF Report:** [Day2_React_Forms_and_API_State_Guide.pdf](file:///d:/PugArch/web_development_training/Day2_React_Forms_and_API_State_Guide.pdf)
+- **Day 1 Component Tree Sketch:** [DAY1_COMPONENT_TREE.md](file:///d:/PugArch/web_development_training/DAY1_COMPONENT_TREE.md) — Visual component hierarchy, props & data flow matrix required by Day 1 curriculum.
 
 ---
 
 ## 📋 Daily Working Agreement Log
+
+### Day 1 Summary:
+- **What works:**
+  - Full React component hierarchy built and rendered cleanly.
+  - Active tab navigation (Overview, Tasks, Team, Analytics, Settings).
+  - Timeframe filter (Today, Week, Month) dynamically updates summary metrics.
+  - Live task search filtering by title, assignee, category, and priority.
+  - Task status toggle updates summary counts reactively.
+  - Controlled New Task Modal adds new items to state with validation.
+  - Zero linter warnings, zero errors. Production build verified.
 
 ### Day 2 Summary:
 - **What works:**

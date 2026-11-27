@@ -36,4 +36,15 @@ coverage
 temp/
 tmp/
 
+# Vercel
 .vercel
+
+# PDF documents and generators
+*.pdf
+generate_*.py
+
+# Personal preparation notes and mentor walkthrough guides
+*mentor*
+*walkthrough*
+*MENTOR*
+*WALKTHROUGH*
